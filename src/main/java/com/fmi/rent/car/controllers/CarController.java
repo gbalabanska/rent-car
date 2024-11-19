@@ -96,17 +96,18 @@ public class CarController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCar(@PathVariable int id) {
         Car carToDelete = carService.findCarById(id);
-        if (carToDelete == null) {
+        if (carToDelete == null || carToDelete.isDeleted()) {
             return new ResponseEntity<>("Car not found with ID " + id, HttpStatus.NOT_FOUND);
         }
 
         try {
-            carService.deleteCar(id);
-            return new ResponseEntity<>("Car with ID " + id + " has been deleted.", HttpStatus.OK);
+            carService.softDeleteCar(id);
+            return new ResponseEntity<>("Car with ID " + id + " has been softly deleted.", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("An error occurred while deleting the car.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
 }

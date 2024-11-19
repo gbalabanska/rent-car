@@ -28,8 +28,15 @@ public class CarService {
         return carRepository.save(car);
     }
 
-    public void deleteCar(int id) {
-        carRepository.deleteById(id);
+    public void softDeleteCar(int id) {
+        Car car = carRepository.findById(id);
+        if (car != null) {
+            car.setDeleted(true); // Set the `is_deleted` flag to true
+            carRepository.save(car); // Persist the change
+        } else {
+            throw new IllegalArgumentException("Car not found with ID " + id);
+        }
     }
+
 
 }

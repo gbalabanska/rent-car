@@ -23,4 +23,5 @@ public class Client {
     private String phone;
     private int age;
     private boolean hasAccidents;    // дали е участвал в произшествия и автомобилни катастрофи
+    private boolean isDeleted;
 }

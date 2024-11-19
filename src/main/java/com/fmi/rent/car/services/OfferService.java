@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OfferService {
@@ -84,11 +85,15 @@ public class OfferService {
                 .orElseThrow(() -> new IllegalArgumentException("Offer not found with ID: " + offerId));
     }
 
-    public void deleteOffer(int offerId) {
-        if (!offerRepository.existsById(offerId)) {
-            throw new IllegalArgumentException("Offer not found with ID: " + offerId);
+    public boolean softDeleteOffer(int offerId) {
+        Optional<Offer> offerOptional = offerRepository.findById(offerId);
+        if (offerOptional.isPresent()) {
+            Offer offer = offerOptional.get();
+            offer.setDeleted(true); // Set the isDeleted flag to true
+            offerRepository.save(offer); // Save the updated offer
+            return true;
         }
-        offerRepository.deleteById(offerId);
+        return false; // Offer not found
     }
 
     public Offer acceptOffer(int offerId) {

@@ -18,4 +18,5 @@ public class Car {
     private String color;
     private String city;
     private double rentPerDay;    // цена на ден за наем
+    private boolean isDeleted;
 }

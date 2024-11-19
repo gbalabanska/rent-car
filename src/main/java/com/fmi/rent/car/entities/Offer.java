@@ -24,4 +24,5 @@ public class Offer {
     private int weekendDays;
     private double totalCost;
     private int isAccepted;
+    private boolean isDeleted;
 }

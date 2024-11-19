@@ -40,9 +40,13 @@ public class OfferController {
 
     @DeleteMapping("/{offerId}")
     public ResponseEntity<Void> deleteOffer(@PathVariable int offerId) {
-        offerService.deleteOffer(offerId);
-        return ResponseEntity.noContent().build();
+        boolean isDeleted = offerService.softDeleteOffer(offerId);
+        if (isDeleted) {
+            return ResponseEntity.noContent().build(); // Successful deletion
+        }
+        return ResponseEntity.notFound().build(); // Offer not found
     }
+
 
     @PutMapping("/{offerId}/accept")
     public ResponseEntity<Offer> acceptOffer(@PathVariable int offerId) {
