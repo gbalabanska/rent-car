@@ -1,0 +1,8 @@
+CREATE TABLE CLIENT (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    phone VARCHAR(15),
+    age INT,
+    has_Accidents BOOLEAN
+);
