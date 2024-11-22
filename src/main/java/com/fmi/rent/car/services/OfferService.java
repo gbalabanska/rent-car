@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OfferService {
@@ -29,31 +28,36 @@ public class OfferService {
 
     @Transactional
     public CreateOfferResponseBodyDTO createOffer(CreateOfferRequestBodyDTO request) {
-        // Fetch the car and client details
-        Car car = carRepository.findById(request.getCarId());
+        CreateOfferResponseBodyDTO responseDTO = new CreateOfferResponseBodyDTO();
+
+        Car car = carRepository.findByIdAndIsDeletedFalse(request.getCarId());
         if (car == null) {
-            throw new IllegalArgumentException("Invalid car ID");
+            responseDTO.setErrorMsg("Car with id " + request.getCarId() + " was not found.");
+            return responseDTO;
         }
-        Client client = clientRepository.findById(request.getClientId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid client ID"));
 
-        // Validate city match
+        Client client = clientRepository.findByIdAndIsDeletedFalse(request.getClientId());
+        if (client == null) {
+            responseDTO.setErrorMsg("Client with id " + request.getClientId() + " was not found.");
+            return responseDTO;
+        }
+
         if (!car.getCity().equals(client.getAddress())) {
-            throw new IllegalArgumentException("Client and car must be in the same city");
+            responseDTO.setErrorMsg("Client " + client.getName() + " and car " + car.getModel() + " are in different cities!");
+            return responseDTO;
         }
 
-        // Calculate total cost
+        // Изчисляване на цена
         double rentPerDay = car.getRentPerDay();
         double weekdayCost = rentPerDay * request.getWeekDays();
         double weekendCost = rentPerDay * request.getWeekendDays() * 1.1;
         double totalCost = weekdayCost + weekendCost;
 
-        // Add accident surcharge if applicable
-        if (client.isHasAccidents()) {
+        if (Boolean.TRUE.equals(client.getHasAccidents())) {
             totalCost += 200;
         }
 
-        // Create and save the offer
+        // Запазване на офертата
         Offer offer = new Offer();
         offer.setCarId(request.getCarId());
         offer.setClientId(request.getClientId());
@@ -65,8 +69,7 @@ public class OfferService {
         Offer savedOffer = offerRepository.save(offer);
 
         // Map to DetailedOfferResponseDTO
-        CreateOfferResponseBodyDTO responseDTO = new CreateOfferResponseBodyDTO();
-        responseDTO.setOfferId(savedOffer.getOfferId());
+        responseDTO.setOfferId(savedOffer.getId());
         responseDTO.setWeekDays(savedOffer.getWeekDays());
         responseDTO.setWeekendDays(savedOffer.getWeekendDays());
         responseDTO.setTotalCost(savedOffer.getTotalCost());
@@ -76,30 +79,31 @@ public class OfferService {
 
         return responseDTO;
     }
+
     public List<Offer> getOffersByClientId(int clientId) {
         return offerRepository.findByClientId(clientId);
     }
 
     public Offer getOfferById(int offerId) {
-        return offerRepository.findById(offerId)
-                .orElseThrow(() -> new IllegalArgumentException("Offer not found with ID: " + offerId));
+        return offerRepository.findByIdAndIsDeletedFalse(offerId);
     }
 
     public boolean softDeleteOffer(int offerId) {
-        Optional<Offer> offerOptional = offerRepository.findById(offerId);
-        if (offerOptional.isPresent()) {
-            Offer offer = offerOptional.get();
-            offer.setDeleted(true); // Set the isDeleted flag to true
-            offerRepository.save(offer); // Save the updated offer
+        Offer offer = offerRepository.findByIdAndIsDeletedFalse(offerId);
+        if(offer != null){
+            offer.setDeleted(true);
+            offerRepository.save(offer);
             return true;
         }
         return false; // Offer not found
     }
 
     public Offer acceptOffer(int offerId) {
-        Offer offer = offerRepository.findById(offerId)
-                .orElseThrow(() -> new IllegalArgumentException("Offer not found with ID: " + offerId));
-        offer.setIsAccepted(1); // Set `isAccepted` to true (1)
+        Offer offer = offerRepository.findByIdAndIsDeletedFalse(offerId);
+        if(offer == null){
+            return null;
+        }
+        offer.setIsAccepted(1);
         return offerRepository.save(offer);
     }
 

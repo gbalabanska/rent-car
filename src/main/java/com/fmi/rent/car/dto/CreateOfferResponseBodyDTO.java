@@ -14,4 +14,6 @@ public class CreateOfferResponseBodyDTO {
 
     private Client client;
     private Car car;
+
+    private String errorMsg;
 }

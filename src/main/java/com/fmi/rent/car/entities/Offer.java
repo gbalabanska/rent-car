@@ -1,5 +1,6 @@
 package com.fmi.rent.car.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,12 +18,13 @@ import lombok.AllArgsConstructor;
 public class Offer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int offerId;
+    private int id;
     private int carId;
     private int clientId;
     private int weekDays;
     private int weekendDays;
     private double totalCost;
     private int isAccepted;
+    @JsonIgnore
     private boolean isDeleted;
 }

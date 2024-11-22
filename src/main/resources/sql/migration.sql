@@ -49,7 +49,7 @@ VALUES
 
 -- Create OFFER table
 CREATE TABLE OFFER (
-    offer_id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     car_id INT NOT NULL,
     client_id INT NOT NULL,
     week_days INT NOT NULL,

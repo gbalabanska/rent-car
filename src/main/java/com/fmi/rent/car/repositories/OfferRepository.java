@@ -10,4 +10,6 @@ import java.util.List;
 public interface OfferRepository extends JpaRepository<Offer, Integer> {
 
     List<Offer> findByClientId(int clientId);
+
+    Offer findByIdAndIsDeletedFalse(int id);
 }

@@ -17,11 +17,11 @@ public class CarService {
     }
 
     public List<Car> findCarsByClientAddress(String city) {
-        return carRepository.findByCityIgnoreCase(city);
+        return carRepository.findByCityIgnoreCaseAndIsDeletedFalse(city);
     }
 
     public Car findCarById(int id) {
-        return carRepository.findById(id);
+        return carRepository.findByIdAndIsDeletedFalse(id);
     }
 
     public Car saveCar(Car car) {
@@ -31,7 +31,7 @@ public class CarService {
     public void softDeleteCar(int id) {
         Car car = carRepository.findById(id);
         if (car != null) {
-            car.setDeleted(true); // Set the `is_deleted` flag to true
+            car.setDeleted(true);
             carRepository.save(car); // Persist the change
         } else {
             throw new IllegalArgumentException("Car not found with ID " + id);

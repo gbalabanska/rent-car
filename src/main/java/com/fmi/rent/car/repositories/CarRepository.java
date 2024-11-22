@@ -9,6 +9,9 @@ import java.util.List;
 @Repository
 public interface CarRepository extends JpaRepository<Car, Integer> {
 
-    List<Car> findByCityIgnoreCase(String city);
+    List<Car> findByCityIgnoreCaseAndIsDeletedFalse(String city);
+
+    Car findByIdAndIsDeletedFalse(int id);
+
     Car findById(int id);
 }
